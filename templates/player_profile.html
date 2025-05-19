@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChessDB - Player Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>Player Profile</h1>
+            <nav class="dashboard-nav">
+                <a href="{{ url_for('player.dashboard') }}" class="nav-link">Back to Dashboard</a>
+                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+            </nav>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                        <button type="button" class="close-flash" onclick="this.parentElement.style.display='none'">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <main class="dashboard-content">
+            <section class="dashboard-section">
+                <h2>Edit Profile</h2>
+                <form method="POST" class="dashboard-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" value="{{ player.username }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" value="{{ player.email or '' }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="elo_rating">ELO Rating</label>
+                            <input type="number" id="elo_rating" name="elo_rating" value="{{ player.elo_rating }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="date_of_birth">Date of Birth</label>
+                            <input type="date" id="date_of_birth" name="date_of_birth" value="{{ player.date_of_birth.strftime('%Y-%m-%d') if player.date_of_birth }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="nationality">Nationality</label>
+                            <input type="text" id="nationality" name="nationality" value="{{ player.nationality or '' }}">
+                        </div>
+                    </div>
+                    <button type="submit" class="action-button">Update Profile</button>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+</html> 
