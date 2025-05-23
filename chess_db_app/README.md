@@ -1,105 +1,88 @@
-# ChessDB
+Here is a clean and informative README.md file for your project:
 
-A web-based chess tournament management system built with Flask and MySQL.
+⸻
 
-## Features
 
-- User authentication for different roles (Players, Coaches, Arbiters, Database Managers)
-- Match management and rating system
-- Hall management
-- Role-specific dashboards
+# Chess Tournament Management System
 
-## Setup
+This is a Flask-based web application for managing chess tournaments, including players, coaches, arbiters, teams, match scheduling, rating, and assignment logic. It supports role-based dashboards and enforces logical constraints across all interactions.
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd chess_db_app
-```
+---
 
-2. Create and activate a virtual environment:
-```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
+## 🔧 Setup Instructions
 
-# Linux/Mac
-python3 -m venv venv
-source venv/bin/activate
-```
+To run the project locally, follow these steps:
 
-3. Install dependencies:
-```bash
+1. **Navigate to the application directory**  
+   ```bash
+   cd code/chess_db_app
+
+	2.	Create a Python 3.11 virtual environment
+
+python3.11 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+
+	3.	Install required dependencies
+
 pip install -r requirements.txt
-```
 
-4. Configure the database:
-- Create a MySQL database named 'chess_db'
-- Update database credentials in `config.py`
 
-5. Run the application:
-```bash
+	4.	Import initial data into the database
+
+python import_data.py
+
+
+	5.	Run the Flask application
+
 python app.py
-```
 
-## Project Structure
 
-```
-chess_db_app/
-├── app.py              # Main application file
-├── config.py           # Configuration settings
-├── requirements.txt    # Project dependencies
-├── utils/             # Utility functions
-│   ├── __init__.py
-│   └── auth.py
-├── templates/         # HTML templates
-│   ├── login.html
-│   ├── arbiter_dashboard.html
-│   └── db_manager_dashboard.html
-└── static/           # Static files
-    └── style.css
-```
+	6.	Open the application in your browser
+After launching, navigate to the local address shown in the terminal:
+http://127.0.0.1:5000
 
-## User Roles
+⸻
 
-1. **Players**
-   - View their matches
-   - Track their ratings
+👤 Roles Supported
+	•	Players: View opponents and ratings.
+	•	Coaches: Create matches, assign players, and view team details.
+	•	Arbiters: Rate matches, view assignments, and see their rating history.
+	•	Admins (optional): Manage all entities from the backend.
 
-2. **Coaches**
-   - Manage their students
-   - View student progress
+⸻
 
-3. **Arbiters**
-   - Manage assigned matches
-   - Rate completed matches
+📂 Project Structure
 
-4. **Database Managers**
-   - Create new users
-   - Manage tournament halls
-   - System administration
+code/chess_db_app/
+│
+├── app.py                # Main Flask application entry point
+├── import_data.py        # CSV-based database importer
+├── routes/               # Flask Blueprints (auth, coach, player, arbiter)
+├── templates/            # HTML templates (Jinja2)
+├── static/               # Static files (CSS)
+├── config.py             # Database configuration
+└── requirements.txt      # Python dependencies
 
-## Database Schema
 
-The system uses MySQL with the following main tables:
-- players
-- coaches
-- arbiters
-- db_managers
-- matches
-- halls
+⸻
 
-## Security
+🧪 Requirements
+	•	Python 3.11
+	•	MySQL or compatible RDBMS (ensure tables are created with correct constraints)
 
-- Password hashing using SHA-256
-- Role-based access control
-- Session management
-- SQL injection prevention
+⸻
 
-## Development
+📋 Notes
+	•	Dates are stored as YYYY-MM-DD in the database but formatted to DD-MM-YYYY on the frontend.
+	•	All logic constraints (contract periods, time slot overlaps, duplicate FIDE IDs, etc.) are enforced.
 
-This is a school project developed for educational purposes.
+⸻
 
-## License
+✅ License
 
-This project is for educational use only. 
+This project is for educational purposes as part of a university course.
+
+---
+
+Let me know if you'd like me to generate a LaTeX version or a PDF too.
