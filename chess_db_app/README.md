@@ -13,7 +13,7 @@ This is a Flask-based web application for managing chess tournaments, including 
 
 To run the project locally, follow these steps:
 
-1. Navigate to the application directory**  
+1. Navigate to the application directory
    ```
    cd code/chess_db_app
 			```
