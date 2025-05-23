@@ -31,21 +31,21 @@ To run the project locally, follow these steps:
 
 
 
-	4.	Import initial data into the database
+4.	Import initial data into the database
    ```
    python import_data.py
 			```
 
 
 
-	5.	Run the Flask application
+5.	Run the Flask application
    ```
    python app.py
 			```
 
 
 
-	6.	Open the application in your browser
+6.	Open the application in your browser
 After launching, navigate to the local address shown in the terminal:
 http://127.0.0.1:5000
 
