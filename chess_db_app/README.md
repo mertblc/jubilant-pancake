@@ -55,6 +55,7 @@ http://127.0.0.1:5000
 
 📂 Project Structure
 
+```text
 code/chess_db_app/
 │
 ├── app.py                # Main Flask application entry point
@@ -64,7 +65,6 @@ code/chess_db_app/
 ├── static/               # Static files (CSS)
 ├── config.py             # Database configuration
 └── requirements.txt      # Python dependencies
-
 
 ⸻
 
