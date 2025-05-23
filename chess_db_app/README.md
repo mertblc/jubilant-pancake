@@ -37,7 +37,7 @@ To run the project locally, follow these steps:
 5.	Run the Flask application
    ```
    python app.py
-			```
+   ```
 
 6.	Open the application in your browser
 After launching, navigate to the local address shown in the terminal:
