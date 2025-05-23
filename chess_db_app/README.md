@@ -32,7 +32,7 @@ To run the project locally, follow these steps:
 4.	Import initial data into the database
    ```
    python import_data.py
-			```
+   ```
 
 5.	Run the Flask application
    ```
