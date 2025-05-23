@@ -65,7 +65,7 @@ code/chess_db_app/
 ├── static/               # Static files (CSS)
 ├── config.py             # Database configuration
 └── requirements.txt      # Python dependencies
-
+```
 ⸻
 
 🧪 Requirements
