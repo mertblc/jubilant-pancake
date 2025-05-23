@@ -16,18 +16,18 @@ To run the project locally, follow these steps:
 1. Navigate to the application directory
    ```
    cd code/chess_db_app
-
+   ```
 
 2.	Create a Python 3.11 virtual environment
    ```
    python3.11 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
-
+   ```
 
 3.	Install required dependencies
    ```
    pip install -r requirements.txt
-	
+   ```
 
 
 
