@@ -13,29 +13,36 @@ This is a Flask-based web application for managing chess tournaments, including 
 
 To run the project locally, follow these steps:
 
-1. **Navigate to the application directory**  
-   ```bash
+1. Navigate to the application directory**  
+   ```
    cd code/chess_db_app
+			```
 
-	2.	Create a Python 3.11 virtual environment
-
-python3.11 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
+2.	Create a Python 3.11 virtual environment
+   ```
+   python3.11 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+			```
 
 	3.	Install required dependencies
+   ```
+   pip install -r requirements.txt
+			```
 
-pip install -r requirements.txt
 
 
 	4.	Import initial data into the database
+   ```
+   python import_data.py
+			```
 
-python import_data.py
 
 
 	5.	Run the Flask application
+   ```
+   python app.py
+			```
 
-python app.py
 
 
 	6.	Open the application in your browser
@@ -84,5 +91,3 @@ code/chess_db_app/
 This project is for educational purposes as part of a university course.
 
 ---
-
-Let me know if you'd like me to generate a LaTeX version or a PDF too.
