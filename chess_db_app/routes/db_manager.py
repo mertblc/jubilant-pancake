@@ -207,7 +207,12 @@ def create_user():
                 print(request.form.to_dict)  # Debug log
                 from datetime import datetime
                 playerDate = None
-
+                # Check if FIDE ID already exists
+                if playerFide:  # Only check if FIDE ID is provided
+                    cursor.execute("SELECT 1 FROM players WHERE fide_id = %s", (playerFide,))
+                    if cursor.fetchone():
+                        flash('A player with this FIDE ID already exists.', 'error')
+                        return redirect(url_for('db_manager.create_user'))
                 if playerDateStr:
                     try:
                         playerDate = datetime.strptime(playerDateStr, "%d-%m-%Y").date()  # Convert to Python date

@@ -75,6 +75,7 @@ def dashboard():
         """, {"user_id": session['user_id']})
 
         matches = cursor.fetchall()
+        print(matches)
         
         # Calculate statistics
         total_matches = len(matches)
@@ -116,7 +117,7 @@ def dashboard():
         """, {"user_id": session['user_id']})
 
         frequent_opponents = cursor.fetchall()
-        print(frequent_opponents)
+        
         # Step 2: Compute average ELO of the most frequent opponents (if any)
         if frequent_opponents:
             max_games = max(op['games_played'] for op in frequent_opponents)

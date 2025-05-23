@@ -34,12 +34,18 @@ def dashboard():
 
         # Get all matches assigned to this arbiter
         cursor.execute("""
-            SELECT m.*, h.name AS hall_name, t.table_number,
-                   r.rating_value AS rating
+            SELECT m.*, 
+                h.name AS hall_name, 
+                t.table_number,
+                r.rating_value AS rating,
+                team1.name AS team1_name,
+                team2.name AS team2_name
             FROM matches m
             JOIN halls h ON m.hall_id = h.hall_id
             JOIN tables t ON m.table_id = t.table_id
             LEFT JOIN ratings r ON m.match_id = r.match_id
+            LEFT JOIN teams team1 ON m.team1_id = team1.team_id
+            LEFT JOIN teams team2 ON m.team2_id = team2.team_id
             WHERE m.arbiter_id = %s
             ORDER BY m.date DESC, m.time_slot
         """, (session['user_id'],))

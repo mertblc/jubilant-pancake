@@ -41,7 +41,9 @@ def dashboard():
             c.name, c.surname, c.nationality,
             u.username,
             t.team_id,
-            t.name AS team_name
+            t.name AS team_name,
+            con.contract_start,
+            con.contract_finish
         FROM coaches c
         JOIN users u ON c.user_id = u.user_id
         LEFT JOIN contracts con ON con.coach_id = c.user_id 
@@ -49,7 +51,8 @@ def dashboard():
         WHERE c.user_id = %s
     """, (coach_id,))
     coach = cursor.fetchone()
-   
+
+
     team_id = coach['team_id']
 
     # 2. Matches created for their team
@@ -192,8 +195,19 @@ def create_match():
             team1_id = int(request.form['white_team'])
             team2_id = int(request.form['black_team'])
             arbiter_id = int(request.form['arbiter_id'])
+            match_date = datetime.strptime(match_date, "%d-%m-%Y").date()
 
             # Validations
+            cursor.execute("""
+                SELECT team_id, contract_start, contract_finish
+                FROM contracts 
+                WHERE coach_id = %s AND contract_finish IS NOT NULL
+            """, (coach_id,))
+            contract = cursor.fetchone()
+            if not (contract['contract_start'] <= match_date <= contract['contract_finish']):
+                flash("Match date must be within your contract period.", "error")
+                return redirect(request.url)
+            
             if team1_id == team2_id:
                 flash("A team cannot play against itself.", "error")
                 return redirect(request.url)
@@ -287,6 +301,16 @@ def assign_player(match_id):
         match_date = match['date']
         match_slot = match['time_slot']
 
+        cursor.execute("""
+            SELECT team_id, contract_start, contract_finish
+            FROM contracts 
+            WHERE coach_id = %s AND contract_finish IS NOT NULL
+        """, (session['user_id'],))
+        contract = cursor.fetchone()
+        if not (contract['contract_start'] <= match_date <= contract['contract_finish']):
+            flash("To assign a player, match date must be within your contract period.", "error")
+            return redirect(url_for('coach.dashboard'))
+        
         # 2. Get all matches this player is already assigned to
         cursor.execute("""
             SELECT m.time_slot

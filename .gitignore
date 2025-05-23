@@ -28,7 +28,7 @@ instance/
 .webassets-cache
 
 # MySQL
-*.sql
+
 *.sql.gz
 *.sql.zip
 *.dump

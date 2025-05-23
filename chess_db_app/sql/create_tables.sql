@@ -59,7 +59,7 @@ CREATE TABLE players (
     fide_id VARCHAR(20) UNIQUE,
     elo_rating INT,
     title_id VARCHAR(10),
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (title_id) REFERENCES titles(title_id),
     CHECK (elo_rating >= 1000)
 );

@@ -60,7 +60,6 @@
                                 <th>Hall</th>
                                 <th>Table</th>
                                 <th>Result</th>
-                                <th>ELO Change</th>
                                 <th>Arbiter</th>
                             </tr>
                         </thead>
@@ -68,7 +67,7 @@
                             {% if recent_opponents %}
                                 {% for match in recent_opponents %}
                                 <tr>
-                                    <td>{{ match.date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ match.date.strftime('%d-%m-%Y') }}</td>
                                     <td>{{ match.opponent_name }}</td>
                                     <td>{{ match.hall_name }}</td>
                                     <td>{{ match.table_number }}</td>
@@ -76,18 +75,6 @@
                                         <span class="match-result {{ match.match_result.lower() }}">
                                             {{ match.match_result }}
                                         </span>
-                                    </td>
-                                    <td>
-                                        {% if match.elo_change is not none %}
-                                            <span class="elo-change 
-                                                {% if match.elo_change > 0 %}positive
-                                                {% elif match.elo_change < 0 %}negative
-                                                {% endif %}">
-                                                {{ match.elo_change }}
-                                            </span>
-                                        {% else %}
-                                            -
-                                        {% endif %}
                                     </td>
                                     <td>{{ match.arbiter_username or 'Not assigned' }}</td>
                                 </tr>
@@ -131,7 +118,7 @@
                                     <td>{{ opponent.opponent_name }}</td>
                                     <td>{{ opponent.games_played }}</td>
                                     <td>{{ opponent.current_elo }}</td>
-                                    <td>{{ opponent.last_played.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ opponent.last_played.strftime('%d-%m-%Y') }}</td>
                                 </tr>
                                 {% endfor %}
                             {% else %}

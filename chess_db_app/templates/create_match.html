@@ -5,7 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Match - ChessDB</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <!-- Initialize the date picker -->
+    <script>
+        flatpickr("#match_date", {
+            dateFormat: "d-m-Y"  // DD-MM-YYYY
+        });
+    </script>
 </head>
+
 <body>
     <div class="dashboard-container">
         <header class="dashboard-header">
@@ -32,8 +45,8 @@
             <section class="dashboard-section">
                 <h2>Match Details</h2>
                 <form method="POST" action="{{ url_for('coach.create_match') }}" class="form-container">
-                    <label for="match_date">Date (YYYY-MM-DD):</label>
-                    <input type="date" name="match_date" required>
+                    <label for="match_date">Date (DD-MM-YYYY):</label>
+                    <input type="text" id="match_date" name="match_date" placeholder="DD-MM-YYYY" required>
                     <br> 
                     <label for="time_slot">Time Slot (1–4):</label>
                     <select name="time_slot" required>

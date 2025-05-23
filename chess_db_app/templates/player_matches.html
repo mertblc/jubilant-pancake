@@ -40,7 +40,6 @@
                                 <th>Hall</th>
                                 <th>Table</th>
                                 <th>Result</th>
-                                <th>ELO Change</th>
                                 <th>Arbiter</th>
                             </tr>
                         </thead>
@@ -48,7 +47,7 @@
                             {% if matches %}
                                 {% for match in matches %}
                                 <tr>
-                                    <td>{{ match.date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ match.date.strftime('%d-%m-%Y') }}</td>
                                     <td>
                                         {% if match.player1_id == session.user_id %}
                                             {{ match.player2_username }}
@@ -71,15 +70,6 @@
                                             <span class="match-result pending">Pending</span>
                                         {% endif %}
                                         
-                                    </td>
-                                    <td>
-                                        {% if match.elo_change %}
-                                            <span class="elo-change {% if match.elo_change > 0 %}positive{% elif match.elo_change < 0 %}negative{% endif %}">
-                                                {{ match.elo_change }}
-                                            </span>
-                                        {% else %}
-                                            -
-                                        {% endif %}
                                     </td>
                                     <td>{{ match.arbiter_username or 'Not assigned' }}</td>
                                 </tr>

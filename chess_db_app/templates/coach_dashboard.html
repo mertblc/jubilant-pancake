@@ -10,7 +10,6 @@
 <div class="dashboard-container">
     <header class="dashboard-header">
         <h1>Welcome, {{ coach.username }}!</h1>
-        <p>Team: <strong>{{ coach.team_name or 'No team assigned' }}</strong></p>
         <nav class="dashboard-nav">
             <a href="{{ url_for('coach.create_match') }}" class="nav-link">Create New Match</a>
             <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
@@ -30,7 +29,29 @@
     {% endwith %}
 
     <main class="dashboard-content">
+        <section class="dashboard-section">
+            <h2>Your Team</h2>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Contract Start</th>
+                            <th>Contract Finish</th>
 
+                        </tr>
+                        <tbody>
+                            <tr>
+                                <td>{{ coach.team_name or 'No team assigned' }}</strong></td>
+                                <td>{{ coach.contract_start.strftime('%d-%m-%Y') if coach.contract_start else 'N/A' }}</td>
+                                <td>{{ coach.contract_finish.strftime('%d-%m-%Y') if coach.contract_finish else 'N/A' }}</td>
+                            </tr>
+                        </tbody>
+                    </thead>  
+                </table>
+            </div>
+                
+        </section>
         <!-- Matches Created by Coach -->
         <section class="dashboard-section">
             <h2>Matches for Your Team</h2>
@@ -53,7 +74,7 @@
                         {% if previous_matches %}
                             {% for match in previous_matches %}
                             <tr>
-                                <td>{{ match.date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ match.date.strftime('%d-%m-%Y') }}</td>
                                 <td>{{ match.time_slot }}</td>
                                 <td>{{ match.hall_name }}</td>
                                 <td>{{ match.table_number }}</td>
@@ -89,7 +110,7 @@
                         {% if matches_created_by_me %}
                             {% for match in matches_created_by_me %}
                             <tr>
-                                <td>{{ match.date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ match.date.strftime('%d-%m-%Y') }}</td>
                                 <td>{{ match.time_slot }}</td>
                                 <td>{{ match.hall_name }}</td>
                                 <td>{{ match.table_number }}</td>
@@ -168,7 +189,7 @@
                         {% if matches_created_by_others %}
                             {% for match in matches_created_by_others %}
                             <tr>
-                                <td>{{ match.date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ match.date.strftime('%d-%m-%Y') }}</td>
                                 <td>{{ match.time_slot }}</td>
                                 <td>{{ match.hall_name }}</td>
                                 <td>{{ match.table_number }}</td>
