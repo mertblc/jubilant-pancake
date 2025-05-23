@@ -24,10 +24,10 @@ To run the project locally, follow these steps:
    source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 
-	3.	Install required dependencies
+3.	Install required dependencies
    ```
    pip install -r requirements.txt
-			```
+	
 
 
 
