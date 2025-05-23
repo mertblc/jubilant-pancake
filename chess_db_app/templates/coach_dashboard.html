@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChessDB - Coach Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="dashboard-container">
+    <header class="dashboard-header">
+        <h1>Welcome, {{ coach.username }}!</h1>
+        <p>Team: <strong>{{ coach.team_name or 'No team assigned' }}</strong></p>
+        <nav class="dashboard-nav">
+            <a href="{{ url_for('coach.create_match') }}" class="nav-link">Create New Match</a>
+            <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+        </nav>
+    </header>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">
+                    {{ message }}
+                    <button type="button" class="close-flash" onclick="this.parentElement.style.display='none'">&times;</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <main class="dashboard-content">
+
+        <!-- Matches Created by Coach -->
+        <section class="dashboard-section">
+            <h2>Matches for Your Team</h2>
+        
+            <!-- Matches Previously Created -->
+            <h3>Previously Created Matches </h3>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time Slot</th>
+                            <th>Hall</th>
+                            <th>Table</th>
+                            <th>Teams</th>
+                            <th>Arbiter</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if previous_matches %}
+                            {% for match in previous_matches %}
+                            <tr>
+                                <td>{{ match.date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ match.time_slot }}</td>
+                                <td>{{ match.hall_name }}</td>
+                                <td>{{ match.table_number }}</td>
+                                <td>Team {{ match.team1_name }} vs Team {{ match.team2_name }}</td>
+                                <td>{{ match.arbiter_username or 'Not Assigned' }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                        <tr><td colspan="6" class="no-data">No previous matches</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        
+            <!-- Matches Created by You -->
+            <h3>Matches Created by You</h3>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time Slot</th>
+                            <th>Hall</th>
+                            <th>Table</th>
+                            <th>Teams</th>
+                            <th>Arbiter</th>
+                            <th>White Player</th>
+                            <th>Black Player</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if matches_created_by_me %}
+                            {% for match in matches_created_by_me %}
+                            <tr>
+                                <td>{{ match.date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ match.time_slot }}</td>
+                                <td>{{ match.hall_name }}</td>
+                                <td>{{ match.table_number }}</td>
+                                <td>Team {{ match.team1_name }} vs Team {{ match.team2_name }}</td>
+                                <td>{{ match.arbiter_username or 'Not Assigned' }}</td>
+                        
+                                <!-- White Player Column -->
+                                <td>
+                                    {% if coach.team_id == match.team1_id and not match.white_player %}
+                                        <form method="POST" action="{{ url_for('coach.assign_player', match_id=match.match_id) }}">
+                                            <select name="player_id" required>
+                                                {% for player in team_players %}
+                                                    <option value="{{ player.user_id }}">{{ player.name }} {{ player.surname }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="hidden" name="role" value="white">
+                                            <button type="submit" class="action-button">Assign White</button>
+                                        </form>
+                                    {% elif match.white_player_name %}
+                                        {{ match.white_player_name }}
+                                    {% else %}
+                                        Not Assigned
+                                    {% endif %}
+                                </td>
+                        
+                                <!-- Black Player Column -->
+                                <td>
+                                    {% if coach.team_id == match.team2_id and not match.black_player %}
+                                        <form method="POST" action="{{ url_for('coach.assign_player', match_id=match.match_id) }}">
+                                            <select name="player_id" required>
+                                                {% for player in team_players %}
+                                                    <option value="{{ player.user_id }}">{{ player.name }} {{ player.surname }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="hidden" name="role" value="black">
+                                            <button type="submit" class="action-button">Assign Black</button>
+                                        </form>
+                                    {% elif match.black_player_name %}
+                                        {{ match.black_player_name }}
+                                    {% else %}
+                                        Not Assigned
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('coach.delete_match', match_id=match.match_id) }}" onsubmit="return confirm('Are you sure you want to delete this match?');">
+                                        <button type="submit" class="action-button delete-button">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                        <tr><td colspan="9" class="no-data">No matches created by you</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        
+            <!-- Matches Created by Others -->
+            <h3> Matches Created by Other Coaches</h3>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time Slot</th>
+                            <th>Hall</th>
+                            <th>Table</th>
+                            <th>Teams</th>
+                            <th>Arbiter</th>
+                            <th>White Player</th>
+                            <th>Black Player</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if matches_created_by_others %}
+                            {% for match in matches_created_by_others %}
+                            <tr>
+                                <td>{{ match.date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ match.time_slot }}</td>
+                                <td>{{ match.hall_name }}</td>
+                                <td>{{ match.table_number }}</td>
+                                <td>Team {{ match.team1_name }} vs Team {{ match.team2_name }}</td>
+                                <td>{{ match.arbiter_username or 'Not Assigned' }}</td>
+        
+                                <!-- White Player Column -->
+                                <td>
+                                    {% if coach.team_id == match.team1_id and not match.white_player %}
+                                        <form method="POST" action="{{ url_for('coach.assign_player', match_id=match.match_id) }}">
+                                            <select name="player_id" required>
+                                                {% for player in team_players %}
+                                                    <option value="{{ player.user_id }}">{{ player.name }} {{ player.surname }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="hidden" name="role" value="white">
+                                            <button type="submit" class="action-button">Assign White</button>
+                                        </form>
+                                    {% elif match.white_player_name %}
+                                        {{ match.white_player_name }}
+                                    {% else %}
+                                        Not Assigned
+                                    {% endif %}
+                                </td>
+        
+                                <!-- Black Player Column -->
+                                <td>
+                                    {% if coach.team_id == match.team2_id and not match.black_player %}
+                                        <form method="POST" action="{{ url_for('coach.assign_player', match_id=match.match_id) }}">
+                                            <select name="player_id" required>
+                                                {% for player in team_players %}
+                                                    <option value="{{ player.user_id }}">{{ player.name }} {{ player.surname }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <input type="hidden" name="role" value="black">
+                                            <button type="submit" class="action-button">Assign Black</button>
+                                        </form>
+                                    {% elif match.black_player_name %}
+                                        {{ match.black_player_name }}
+                                    {% else %}
+                                        Not Assigned
+                                    {% endif %}
+                                </td>
+                                
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                        <tr><td colspan="9" class="no-data">No matches from other coaches</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+
+
+    </main>
+</div>
+</body>
+</html>

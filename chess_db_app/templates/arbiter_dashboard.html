@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChessDB - Arbiter Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>Welcome, {{ arbiter.username }}!</h1>
+            <nav class="dashboard-nav">
+                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+            </nav>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                        <button type="button" class="close-flash" onclick="this.parentElement.style.display='none'">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <main class="dashboard-content">
+
+            <!-- Arbiter Profile Section -->
+            <section class="dashboard-section">
+                <h2>Your Profile</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Name</h3>
+                        <p class="stat-value">{{ arbiter.name }} {{ arbiter.surname }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Nationality</h3>
+                        <p class="stat-value">{{ arbiter.nationality }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Experience Level</h3>
+                        <p class="stat-value">{{ arbiter.experience_level }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Average Rating -->
+            <section class="dashboard-section">
+                <h2>Your Rating Summary</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Average Rating Given</h3>
+                        <p class="stat-value">{{ avg_rating if avg_rating else 'N/A' }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Assigned Matches -->
+            <section class="dashboard-section">
+                <h2>Assigned Matches</h2>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time Slot</th>
+                                <th>Hall</th>
+                                <th>Table</th>
+                                <th>Teams</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if matches %}
+                                {% for match in matches %}
+                                <tr>
+                                    <td>{{ match.date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ match.time_slot }}</td>
+                                    <td>{{ match.hall_name }}</td>
+                                    <td>{{ match.table_number }}</td>
+                                    <td>Team {{ match.team1_id }} vs Team {{ match.team2_id }}</td>
+                                    <td>
+                                        {% if match.rating is not none %}
+                                            <span class="match-result">{{ match.rating }}</span>
+                                        {% else %}
+                                            <form action="{{ url_for('arbiter.rate_match', match_id=match.match_id) }}" method="post" class="rating-form">
+                                                <input type="number" name="rating" min="0" max="10" step="0.1" required>
+                                                <button type="submit" class="action-button">Submit</button>
+                                            </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="no-data">No matches assigned</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

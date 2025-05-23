@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Manager Dashboard - ChessDB</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Database Manager Dashboard</h1>
+            <div class="dashboard-nav">
+                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                        <button type="button" class="close-flash" onclick="this.parentElement.style.display='none'">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- User Management Section -->
+        <div class="dashboard-section">
+            <h2>Create New User</h2>
+            <form method="POST" action="{{ url_for('db_manager.create_user') }}" class="dashboard-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required
+                               pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                               title="Password must be at least 8 characters long and include uppercase, lowercase, number, and special character">
+                        <small class="password-hint">Password must be at least 8 characters and include uppercase, lowercase, number, and special character</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="user_type">User Type</label>
+                        <select id="user_type" name="user_type" required>
+                            <option value="">Select user type</option>
+                            <option value="player">Player</option>
+                            <option value="coach">Coach</option>
+                            <option value="arbiter">Arbiter</option>
+                        </select>
+                    </div>
+                    <div class="coach-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="coach-name">Name</label>
+                            <input type="text" id="coach-name" name="coach_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="coach-surname">Surname</label>
+                            <input type="text" id="coach-surname" name="coach_surname" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="coach-nationality">Nationality</label>
+                            <input type="text" id="coach-nationality" name="coach_nationality" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="coach-certification">Certification (optional)</label>
+                            <!-- DEBUG: {{ coach_certification_types }} -->
+                            <select id="coach-certification" name="coach_certification">
+                                <option value="">-- Select certification --</option>
+                                {% for cert in coach_certification_types %}
+                                    <option value="{{ cert }}">{{ cert }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="arbiter-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="arbiter-name">Name</label>
+                            <input type="text" id="arbiter-name" name="arbiter-name" >
+                        </div>
+                        <div class="form-group">
+                            <label for="arbiter-surname">Surname</label>
+                            <input type="text" id="arbiter-surname" name="arbiter-surname" >
+                        </div>
+                        <div class="form-group">
+                            <label for="arbiter-nationality">Nationality</label>
+                            <input type="text" id="arbiter-nationality" name="arbiter-nationality" >
+                        </div>
+                        <div class="form-group">
+                            <label for="experience-level">Experience-Level</label>
+                            <input type="text" id="experience-level" name="experience-level" >
+                        </div>
+                        <div class="form-group">
+                            <label for="arbiter-certification">Certification (optional)</label>
+                            <!-- DEBUG: {{ coach_certification_types }} -->
+                            <select id="arbiter-certification" name="arbiter-certification">
+                                <option value="">-- Select certification --</option>
+                                {% for cert in arbiter_certification_types %}
+                                    <option value="{{ cert }}">{{ cert }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="player-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="player-name">Name</label>
+                            <input type="text" id="player-name" name="player-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="player-surname">Surname</label>
+                            <input type="text" id="player-surname" name="player-surname">
+                        </div>
+                        <div class="form-group">
+                            <label for="player-nationality">Nationality</label>
+                            <input type="text" id="player-nationality" name="player-nationality">
+                        </div>
+                        <div class="form-group">
+                            <label for="player-date">Date of Birth</label>
+                            <input type="text" id="player-date" name="player-date"
+                                   pattern="^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[012])-\d{4}$"
+                                   title="Date must be in DD-MM-YYYY format"
+                                   placeholder="DD-MM-YYYY" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="player-fide">FIDE ID</label>
+                            <input type="text" id="player-fide" name="player-fide">
+                        </div>
+                        <div class="form-group">
+                            <label for="player-elo">Initial Rating</label>
+                            <input type="number" id="player-elo" name="player-elo" min="0" max="3000">
+                        </div>
+                        <div class="form-group">
+                            <label for="player-title">Title (optional)</label>
+                            <!-- DEBUG: {{ titles }} -->
+
+                            <select id="player-title" name="player-title">
+                                <option value="">-- Select title --</option>
+                                {% for title in titles %}
+                                    <option value="{{ title }}">{{ title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="action-button">Create User</button>
+            </form>
+        </div>
+
+        <!-- Hall Management Section -->
+        <div class="dashboard-section">
+            <h2>Manage Halls</h2>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Hall ID</th>
+                            <th>Current Name</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for hall in halls %}
+                        <tr>
+                            <td>{{ hall.hall_id }}</td>
+                            <td>{{ hall.name }}</td>
+                            <td>
+                                <span class="status-active">Active</span>
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ url_for('db_manager.rename_hall', hall_id=hall.hall_id) }}" class="inline-form">
+                                    <input type="text" name="new_name" required 
+                                           class="hall-name-input" placeholder="New hall name"
+                                           value="{{ hall.name }}">
+                                    <button type="submit" class="action-button">Rename</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="no-data">No halls found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        document.getElementById('user_type').addEventListener('change', function () {
+            const userType = this.value;
+        
+            // Sections
+            const playerFields = document.querySelector('.player-fields');
+            const coachFields = document.querySelector('.coach-fields');
+            const arbiterFields = document.querySelector('.arbiter-fields');
+        
+            // Hide all first
+            playerFields.style.display = 'none';
+            coachFields.style.display = 'none';
+            arbiterFields.style.display = 'none';
+        
+            // Disable all inputs' required attributes
+            [...document.querySelectorAll('.form-group input')].forEach(input => input.required = false);
+        
+            // Then show relevant and enable requireds inside it
+            if (userType === 'player') {
+                playerFields.style.display = 'block';
+                playerFields.querySelectorAll('input').forEach(input => input.required = true);
+            } else if (userType === 'coach') {
+                coachFields.style.display = 'block';
+                coachFields.querySelectorAll('input').forEach(input => {
+                    if (input.name !== 'certification') input.required = true; // Optional field
+                });
+            } else if (userType === 'arbiter') {
+                arbiterFields.style.display = 'block';
+                arbiterFields.querySelectorAll('input').forEach(input => {
+                    if (input.name !== 'certification') input.required = true;
+                });
+            }
+        });
+        
+        // Trigger change on page load
+        window.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('user_type').dispatchEvent(new Event('change'));
+        });
+    </script>
+ 
+
+
+</body>
+
+</html>

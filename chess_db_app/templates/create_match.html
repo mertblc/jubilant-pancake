@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Match - ChessDB</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>Create New Match</h1>
+            <nav class="dashboard-nav">
+                <a href="{{ url_for('coach.dashboard') }}" class="nav-link">Dashboard</a>
+                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+            </nav>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                        <button type="button" class="close-flash" onclick="this.parentElement.style.display='none'">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <main class="dashboard-content">
+            <section class="dashboard-section">
+                <h2>Match Details</h2>
+                <form method="POST" action="{{ url_for('coach.create_match') }}" class="form-container">
+                    <label for="match_date">Date (YYYY-MM-DD):</label>
+                    <input type="date" name="match_date" required>
+                    <br> 
+                    <label for="time_slot">Time Slot (1–4):</label>
+                    <select name="time_slot" required>
+                        {% for slot in [1, 2, 3, 4] %}
+                            <option value="{{ slot }}">{{ slot }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="hall_id">Select Hall:</label>
+                    <select name="hall_id" required>
+                        {% for hall in halls %}
+                            <option value="{{ hall.hall_id }}">
+                                {{ hall.name }} ({{ hall.country }}, capacity: {{ hall.capacity }})
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="table_id">Select Table:</label>
+                    <select name="table_id" required>
+                        {% for table in tables %}
+                            <option value="{{ table.table_id }}">
+                                Table {{ table.table_number }} (Hall Name: {{ table.hall_name }})
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="white_team">White Team:</label>
+                    <select name="white_team" required>
+                        {% for team in all_teams %}
+                            <option value="{{ team.team_id }}">{{ team.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="black_team">Black Team:</label>
+                    <select name="black_team" required>
+                        {% for team in all_teams %}
+                            <option value="{{ team.team_id }}">{{ team.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="arbiter_id">Select Arbiter:</label>
+                    <select name="arbiter_id" required>
+                        {% for arbiter in all_arbiters %}
+                            <option value="{{ arbiter.user_id }}">
+                                {{ arbiter.name }} {{ arbiter.surname }} ({{ arbiter.experience_level }})
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit" class="action-button">Create Match</button>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

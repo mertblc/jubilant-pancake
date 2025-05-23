@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChessDB - Player Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>Welcome, {{ username }}!</h1>
+            <nav class="dashboard-nav">
+                <a href="{{ url_for('player.matches') }}" class="nav-link">View All Matches</a>
+                <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+            </nav>
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                        <button type="button" class="close-flash" onclick="this.parentElement.style.display='none'">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <main class="dashboard-content">
+            <!-- Player Stats Section -->
+            <section class="dashboard-section">
+                <h2>Your Stats</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Current ELO</h3>
+                        <p class="stat-value">{{ current_elo }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Games Played</h3>
+                        <p class="stat-value">{{ games_played }}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Win Rate</h3>
+                        <p class="stat-value">{{ win_rate }}%</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Matches Section -->
+            <section class="dashboard-section">
+                <h2>Recent Matches</h2>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Opponent</th>
+                                <th>Hall</th>
+                                <th>Table</th>
+                                <th>Result</th>
+                                <th>ELO Change</th>
+                                <th>Arbiter</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if recent_opponents %}
+                                {% for match in recent_opponents %}
+                                <tr>
+                                    <td>{{ match.date.strftime('%Y-%m-%d') }}</td>
+                                    <td>{{ match.opponent_name }}</td>
+                                    <td>{{ match.hall_name }}</td>
+                                    <td>{{ match.table_number }}</td>
+                                    <td>
+                                        <span class="match-result {{ match.match_result.lower() }}">
+                                            {{ match.match_result }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if match.elo_change is not none %}
+                                            <span class="elo-change 
+                                                {% if match.elo_change > 0 %}positive
+                                                {% elif match.elo_change < 0 %}negative
+                                                {% endif %}">
+                                                {{ match.elo_change }}
+                                            </span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ match.arbiter_username or 'Not assigned' }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="no-data">No recent matches played</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+          
+            <!-- Frequent Opponents Section -->
+            <section class="dashboard-section">
+                <h2>All Opponents</h2>
+
+                {% if average_elo %}
+                <div class="stat-card" style="margin-bottom: 1rem;">
+                    <h3>Average ELO of Frequent Opponents</h3>
+                    <p class="stat-value">{{ average_elo }}</p>
+                </div>
+                {% endif %}
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Opponent</th>
+                                <th>Games Played</th>
+                                <th>Current ELO</th>
+                                <th>Last Played</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if frequent_opponents %}
+                                {% for opponent in frequent_opponents %}
+                                <tr>
+                                    <td>{{ opponent.opponent_name }}</td>
+                                    <td>{{ opponent.games_played }}</td>
+                                    <td>{{ opponent.current_elo }}</td>
+                                    <td>{{ opponent.last_played.strftime('%Y-%m-%d') }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="no-data">No frequent opponents yet</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+    
+    
+
+            
+        </main>
+    </div>
+</body>
+</html> 
