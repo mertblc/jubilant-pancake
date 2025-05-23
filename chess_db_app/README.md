@@ -46,10 +46,10 @@ http://127.0.0.1:5000
 ⸻
 
 👤 Roles Supported
-	•	Players: View opponents and ratings.
-	•	Coaches: Create matches, assign players, and view team details.
-	•	Arbiters: Rate matches, view assignments, and see their rating history.
-	•	Admins (optional): Manage all entities from the backend.
+•	Players: View opponents and ratings.
+•	Coaches: Create matches, assign players, and view team details.
+•	Arbiters: Rate matches, view assignments, and see their rating history.
+•	Admins (optional): Manage all entities from the backend.
 
 ⸻
 
@@ -69,14 +69,14 @@ code/chess_db_app/
 ⸻
 
 🧪 Requirements
-	•	Python 3.11
-	•	MySQL or compatible RDBMS (ensure tables are created with correct constraints)
+•	Python 3.11
+•	MySQL or compatible RDBMS (ensure tables are created with correct constraints)
 
 ⸻
 
 📋 Notes
-	•	Dates are stored as YYYY-MM-DD in the database but formatted to DD-MM-YYYY on the frontend.
-	•	All logic constraints (contract periods, time slot overlaps, duplicate FIDE IDs, etc.) are enforced.
+•	Dates are stored as YYYY-MM-DD in the database but formatted to DD-MM-YYYY on the frontend.
+•	All logic constraints (contract periods, time slot overlaps, duplicate FIDE IDs, etc.) are enforced.
 
 ⸻
 
