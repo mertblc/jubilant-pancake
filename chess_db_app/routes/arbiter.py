@@ -113,3 +113,47 @@ def rate_match(match_id):
         conn.close()
 
     return redirect(url_for('arbiter.dashboard'))
+
+@arbiter_bp.route('/result_match/<int:match_id>', methods=['POST'])
+@login_required
+@arbiter_required
+def result_match(match_id):
+    result = request.form.get('result')
+    if not result:
+        flash('Rating value is required.', 'error')
+        return redirect(url_for('arbiter.dashboard'))
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT 1 FROM match_players
+            WHERE match_id = %s
+            AND white_player IS NOT NULL
+            AND black_player IS NOT NULL
+        """, (match_id,))
+        assigned = cursor.fetchone()
+
+        if not assigned:
+            flash("Both players must be assigned to submit a result.", "error")
+            return redirect(url_for('arbiter.dashboard'))  # or another fallback
+        
+        # Insert new result
+        cursor.execute("""
+            UPDATE match_players
+            SET result = %s
+            WHERE match_id = %s
+        """, (result, match_id))
+
+        conn.commit()
+        flash('Match result submitted successfully.', 'success')
+
+    except mysql.connector.Error as err:
+        flash('Database error occurred during result entry.', 'error')
+        print(f"Database error: {err}")
+    finally:
+        cursor.close()
+        conn.close()
+
+    return redirect(url_for('arbiter.dashboard'))

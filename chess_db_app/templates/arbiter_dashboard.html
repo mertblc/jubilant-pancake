@@ -85,7 +85,16 @@
                                     <td>Team {{ match.team1_name }} vs Team {{ match.team2_name }}</td>
                                     <td>
                                         {% if match.match_result is none %}
-                                            <span class="match-pending">Pending</span>
+                                            <form action="{{ url_for('arbiter.result_match', match_id=match.match_id) }}" method="post" class="result-form">
+                                                <label for="result">Match Result:</label>
+                                                <select name="result" id="result" required>
+                                                <option value="" disabled selected>Select result</option>
+                                                <option value="white">White</option>
+                                                <option value="black">Black</option>
+                                                <option value="draw">Draw</option>
+                                                </select>
+                                                <button type="submit" class="action-button">Submit</button>
+                                            </form>
                                         {% else %}
                                             {% if match.rating is not none %}
                                                 <span class="match-result">{{ match.rating }}</span>
