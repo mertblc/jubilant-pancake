@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Database Manager Dashboard - ChessDB</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        flatpickr("#coach_contract_finish", {
+            dateFormat: "d-m-Y"  // DD-MM-YYYY
+        });
+    </script>
+    <script>
+        flatpickr("#coach_contract_start", {
+            dateFormat: "d-m-Y"  // DD-MM-YYYY
+        });
+    </script>
 </head>
 <body>
     <div class="dashboard-container">
@@ -78,6 +88,23 @@
                                     <option value="{{ cert }}">{{ cert }}</option>
                                 {% endfor %}
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="coach-team">Team</label>
+                            <select id="coach-team" name="coach_team">
+                                <option value="">-- Select team --</option>
+                                {% for team in teams %}
+                                    <option value="{{ team }}">{{ team }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="coach-contract-start">Contract Start (DD-MM-YYYY)</label>
+                            <input type="text" id="coach-contract-start" name="coach_contract_start" placeholder="DD-MM-YYYY" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="coach-contract-finish">Contract Finish (DD-MM-YYYY)</label>
+                            <input type="text" id="coach-contract-finish" name="coach_contract_finish" placeholder="DD-MM-YYYY" required>
                         </div>
                     </div>
                     <div class="arbiter-fields" style="display: none;">

@@ -2,7 +2,7 @@ import sys
 sys.path.append('chess_db_app')
 import pandas as pd
 import mysql.connector
-from datetime import datetime
+from datetime import datetime, date
 import hashlib
 from config import Config
 import logging
@@ -14,6 +14,8 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     filename='data_import.log'
 )
+def parse_date_safe(dob_raw):
+    return datetime.strptime(dob_raw.strip(), "%d-%m-%Y").date()
 
 
 def import_certification_mappings_coach(cursor, df, role):
@@ -328,7 +330,7 @@ def import_data(excel_file):
             # 3. Import Players
             if 'Players' in xls.sheet_names:
                 logging.info("Importing Players...")
-                df = pd.read_excel(excel_file, sheet_name='Players')
+                df = pd.read_excel(excel_file, sheet_name='Players',dtype={"date_of_birth": str})
                 for _, row in df.iterrows():
                     try:
                         # Insert user exactly as is
@@ -347,7 +349,21 @@ def import_data(excel_file):
 
                         # Convert date string like "10-05-2000" to datetime.date (format YYYY-MM-DD)
                         try:
-                            birth_date = pd.to_datetime(row['date_of_birth'], dayfirst=True).date()
+                            date = row['date_of_birth'].split(" ")
+                            dateG=[0,0,0]
+                            if( len(date) > 1):
+                                dateS= date[0].split("-")
+                                dateG[0] = dateS[1]  # day
+                                dateG[1] = dateS[2]  # month
+                                dateG[2] = dateS[0]  # year
+                            else:
+                                dateS= date[0].split("-")
+                                dateG[0] = dateS[0]  # day
+                                dateG[1] = dateS[1]  # month
+                                dateG[2] = dateS[2]  # year
+                            date_string = '-'.join(dateG) 
+                            birth_date = parse_date_safe(date_string)
+
                         except Exception as e:
                             logging.warning(f"Invalid date format for {row['username']}: {row['date_of_birth']}. Skipping.")
                             continue
@@ -411,7 +427,7 @@ def import_data(excel_file):
             # 7. Import Coaches
             if 'Coaches' in xls.sheet_names:
                 logging.info("Importing Coaches...")
-                df = pd.read_excel(excel_file, sheet_name='Coaches')
+                df = pd.read_excel(excel_file, sheet_name='Coaches',dtype={"contract_start": str, "contract_finish": str})
                 for _, row in df.iterrows():
                     try:
                         # Insert user exactly as is
@@ -442,8 +458,38 @@ def import_data(excel_file):
                             row['nationality']
                         ))
                         if pd.notna(row['team_id']) and pd.notna(row['contract_start']) and pd.notna(row['contract_finish']):
-                            contract_start = pd.to_datetime(row['contract_start'], dayfirst=True).date()
-                            contract_finish = pd.to_datetime(row['contract_finish'], dayfirst=True).date()
+                            
+                            contract_start = row['contract_start'].split(" ")
+
+                            dateG=[0,0,0]
+                            if( len(contract_start) > 1):
+                                dateS= contract_start[0].split("-")
+                                dateG[0] = dateS[1]  # day
+                                dateG[1] = dateS[2]  # month
+                                dateG[2] = dateS[0]  # year
+                            else:
+                                dateS= contract_start[0].split("-")
+                                dateG[0] = dateS[0]  # day
+                                dateG[1] = dateS[1]  # month
+                                dateG[2] = dateS[2]  # year
+                            date_string = '-'.join(dateG) 
+                            contract_start = parse_date_safe(date_string)
+
+                            contract_finish = row['contract_finish'].split(" ")
+
+                            dateG=[0,0,0]
+                            if( len(contract_finish) > 1):
+                                dateS= contract_finish[0].split("-")
+                                dateG[0] = dateS[1]  # day
+                                dateG[1] = dateS[2]  # month
+                                dateG[2] = dateS[0]  # year
+                            else:
+                                dateS= contract_finish[0].split("-")
+                                dateG[0] = dateS[0]  # day
+                                dateG[1] = dateS[1]  # month
+                                dateG[2] = dateS[2]  # year
+                            date_string = '-'.join(dateG) 
+                            contract_finish = parse_date_safe(date_string)
                             team_id = int(row['team_id'])
 
                             cursor.execute("""
@@ -546,7 +592,7 @@ def import_data(excel_file):
 
             if 'Matches' in xls.sheet_names:
                 logging.info("Importing Matches...")
-                df = pd.read_excel(excel_file, sheet_name='Matches')
+                df = pd.read_excel(excel_file, sheet_name='Matches',dtype={"date": str})
 
                 for _, row in df.iterrows():
                     try:
@@ -560,7 +606,17 @@ def import_data(excel_file):
 
                         if arbiter_id:
                             # Convert 'DD-MM-YYYY' string to proper date object
-                            match_date = pd.to_datetime(row['date']).date()
+                            match_date = row['date'].split(" ")
+                            
+                            dateG=[0,0,0]
+                            dateS= match_date[0].split("-")
+                            dateG[0] = dateS[1]  # day
+                            dateG[1] = dateS[2]  # month
+                            dateG[2] = dateS[0]  # year
+                            date_string = '-'.join(dateG) 
+                            match_date = parse_date_safe(date_string)
+
+  
                             cursor.execute("""
                                 INSERT INTO matches (match_id, date, time_slot, hall_id, 
                                                     table_id, team1_id, team2_id, arbiter_id)

@@ -84,13 +84,17 @@
                                     <td>{{ match.table_number }}</td>
                                     <td>Team {{ match.team1_name }} vs Team {{ match.team2_name }}</td>
                                     <td>
-                                        {% if match.rating is not none %}
-                                            <span class="match-result">{{ match.rating }}</span>
+                                        {% if match.match_result is none %}
+                                            <span class="match-pending">Pending</span>
                                         {% else %}
-                                            <form action="{{ url_for('arbiter.rate_match', match_id=match.match_id) }}" method="post" class="rating-form">
-                                                <input type="number" name="rating" min="0" max="10" step="0.1" required>
-                                                <button type="submit" class="action-button">Submit</button>
-                                            </form>
+                                            {% if match.rating is not none %}
+                                                <span class="match-result">{{ match.rating }}</span>
+                                            {% else %}
+                                                <form action="{{ url_for('arbiter.rate_match', match_id=match.match_id) }}" method="post" class="rating-form">
+                                                    <input type="number" name="rating" min="0" max="10" step="0.1" required>
+                                                    <button type="submit" class="action-button">Submit</button>
+                                                </form>
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                 </tr>

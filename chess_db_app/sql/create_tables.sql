@@ -70,7 +70,7 @@ CREATE TABLE coaches (
     name VARCHAR(100),
     surname VARCHAR(100),
     nationality VARCHAR(50),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 -- Arbiters table
@@ -80,7 +80,7 @@ CREATE TABLE arbiters (
     surname VARCHAR(100),
     nationality VARCHAR(50),
     experience_level VARCHAR(50),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 -- 3. VENUE TABLES (No dependencies on user tables)

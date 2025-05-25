@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from functools import wraps
 import mysql.connector
 from config import Config
+from datetime import datetime
 from routes.auth import login_required, get_db_connection, hash_password
 
 db_manager_bp = Blueprint('db_manager', __name__)
@@ -85,12 +86,16 @@ def dashboard():
         cursor.execute("SELECT title_name FROM titles")
         titles = [row['title_name'] for row in cursor.fetchall()]
         
+        cursor.execute("SELECT name FROM teams")
+        teams = [row['name'] for row in cursor.fetchall()]
+        
         return render_template('db_manager_dashboard.html',
                              user_counts=user_counts,
                              halls=halls,
                              hall_stats=hall_stats,
                              match_stats=match_stats,
                              titles=titles,
+                             teams=teams,
                              coach_certification_types=coach_certification_types,
                              arbiter_certification_types=arbiter_certification_types)
                              
@@ -205,7 +210,7 @@ def create_user():
                 playerElo = request.form.get('player-elo', '')
                 playerTitle = request.form.get('player-title')  # only one
                 print(request.form.to_dict)  # Debug log
-                from datetime import datetime
+                
                 playerDate = None
                 # Check if FIDE ID already exists
                 if playerFide:  # Only check if FIDE ID is provided
@@ -239,6 +244,44 @@ def create_user():
                 surname = request.form.get('coach_surname', '')
                 nationality = request.form.get('coach_nationality', '')
                 certification_name = request.form.get('coach_certification')  # only one
+                team= request.form.get('coach_team')  # only one
+                contract_start = request.form.get('coach_contract_start', '')
+                contract_end = request.form.get('coach_contract_finish', '')
+                start_date = datetime.strptime(contract_start.strip(), "%d-%m-%Y").date()
+                end_date = datetime.strptime(contract_end.strip(), "%d-%m-%Y").date()
+                
+                # Get team_id from team name
+                cursor.execute("SELECT team_id FROM teams WHERE name = %s", (team,))
+                team_result = cursor.fetchone()
+                if not team_result:
+                    flash(f"Team '{team}' not found.", "error")
+                    # Consume any remaining results to prevent InternalError
+                    while cursor.nextset():
+                        cursor.fetchall()
+                    cursor.close()
+                    conn.close()
+                    return redirect(url_for('db_manager.dashboard'))  # Or wherever you want to go
+
+                team_id = team_result[0]
+
+                # Check for overlapping contracts
+                cursor.execute("""
+                    SELECT * FROM contracts
+                    WHERE team_id = %s
+                    AND NOT (
+                        contract_finish < %s OR
+                        contract_start > %s
+                    )
+                """, (team_id, start_date, end_date))
+
+                if cursor.fetchone():
+                    flash(f"A coach is already assigned to {team} during this period.", "error")
+                    # Consume any remaining results to prevent InternalError
+                    while cursor.nextset():
+                        cursor.fetchall()
+                    cursor.close()
+                    conn.close()
+                    return redirect(url_for('db_manager.dashboard'))  # Or your form page
 
                 # 1. Insert coach profile
                 cursor.execute("""
@@ -259,6 +302,11 @@ def create_user():
                             INSERT INTO coach_certifications (coach_id, certification_id)
                             VALUES (%s, %s)
                         """, (user_id, cert_id))
+                # 3. Insert contract for this coach
+                cursor.execute("""
+                    INSERT INTO contracts (coach_id, team_id, contract_start, contract_finish)
+                    VALUES (%s, %s, %s, %s)
+                """, (user_id, team_id, start_date, end_date))
 
                 print(f"Debug - Created coach {name} {surname}, certification={certification_name}")  # Debug log
             elif user_type == 'arbiter':
